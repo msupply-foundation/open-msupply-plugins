@@ -23,6 +23,8 @@ export const getPluginQueries = (sdk: Sdk, storeId: string) => ({
       const result = await sdk.pluginData({
         storeId,
         invoiceId,
+        pluginCode: PLUGIN_CODE,
+        dataId: PRESCRIPTION_PAYMENT_IDENTIFIER,
       });
 
       const { pluginData } = result;

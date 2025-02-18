@@ -6,6 +6,8 @@ type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 export type PluginDataQueryVariables = Types.Exact<{
   storeId: Types.Scalars['String']['input'];
   invoiceId: Types.Scalars['String']['input'];
+  pluginCode: Types.Scalars['String']['input'];
+  dataId: Types.Scalars['String']['input'];
 }>;
 
 
@@ -29,11 +31,11 @@ export type UpdatePluginDataMutation = { __typename: 'Mutations', updatePluginDa
 
 
 export const PluginDataDocument = gql`
-    query pluginData($storeId: String!, $invoiceId: String!) {
+    query pluginData($storeId: String!, $invoiceId: String!, $pluginCode: String!, $dataId: String!) {
   pluginData(
     storeId: $storeId
-    pluginCode: "civ_prescription_payment"
-    filter: {relatedRecordId: {equalTo: $invoiceId}}
+    pluginCode: $pluginCode
+    filter: {relatedRecordId: {equalTo: $invoiceId}, dataIdentifier: {equalTo: $dataId}}
   ) {
     ... on PluginDataConnector {
       __typename

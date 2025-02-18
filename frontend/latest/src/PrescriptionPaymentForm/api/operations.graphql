@@ -1,8 +1,16 @@
-query pluginData($storeId: String!, $invoiceId: String!) {
+query pluginData(
+  $storeId: String!
+  $invoiceId: String!
+  $pluginCode: String!
+  $dataId: String!
+) {
   pluginData(
     storeId: $storeId
-    pluginCode: PLUGIN_CODE
-    filter: { relatedRecordId: { equalTo: $invoiceId } }
+    pluginCode: $pluginCode
+    filter: {
+      relatedRecordId: { equalTo: $invoiceId }
+      dataIdentifier: { equalTo: $dataId }
+    }
   ) {
     ... on PluginDataConnector {
       __typename
