@@ -5,11 +5,16 @@ import { PLUGIN_CODE, PRESCRIPTION_PAYMENT_IDENTIFIER } from './hooks';
 
 export type Sdk = ReturnType<typeof getSdk>;
 
-export type PluginData = { id?: string; data: string; invoice_id: string };
+export type PluginData = {
+  id?: string;
+  data: string;
+  invoice_id: string;
+};
 
 const pluginParsers = {
-  toUpdate: (input: PluginData): UpdatePluginDataInput => ({
+  toUpdate: (storeId: string, input: PluginData): UpdatePluginDataInput => ({
     id: input.id ?? '',
+    storeId,
     data: input.data,
     pluginCode: PLUGIN_CODE,
     relatedRecordId: input.invoice_id,
@@ -39,7 +44,7 @@ export const getPluginQueries = (sdk: Sdk, storeId: string) => ({
     const result =
       (await sdk.updatePluginData({
         storeId,
-        input: pluginParsers.toUpdate(input),
+        input: pluginParsers.toUpdate(storeId, input),
       })) || {};
 
     const { updatePluginData } = result;
@@ -55,6 +60,7 @@ export const getPluginQueries = (sdk: Sdk, storeId: string) => ({
       storeId,
       input: {
         data: input.data,
+        storeId,
         id: FnUtils.generateUUID(),
         pluginCode: PLUGIN_CODE,
         relatedRecordId: input.invoice_id,

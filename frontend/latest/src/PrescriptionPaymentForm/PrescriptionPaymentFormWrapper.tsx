@@ -13,10 +13,18 @@ export type PrescriptionPaymentFormPlugin = NonNullable<
 
 const PrescriptionPaymentForm: PrescriptionPaymentFormPlugin = ({
   prescriptionData,
+  totalToBePaidByInsurance,
+  totalToBePaidByPatient,
+  events,
 }) => (
   <ThemeProviderProxy>
     <QueryClientProviderProxy>
-      <PrescriptionPaymentFormInner prescriptionData={prescriptionData} />
+      <PrescriptionPaymentFormInner
+        prescriptionData={prescriptionData}
+        totalToBePaidByInsurance={totalToBePaidByInsurance}
+        totalToBePaidByPatient={totalToBePaidByPatient}
+        events={events}
+      />
     </QueryClientProviderProxy>
   </ThemeProviderProxy>
 );
