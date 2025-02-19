@@ -40,6 +40,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
   const { mutate } = data?.id ? usePluginData.update() : usePluginData.insert();
 
   const onSave = useCallback(async () => {
+    //TODO: disable save button if payment isn't valid
     mutate({
       id: data?.id,
       data: JSON.stringify(draft),
@@ -59,16 +60,15 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
     }
   }, [data]);
 
-  const changeValue =
-    (draft?.amountPaid ?? 0 - totalToBePaidByPatient > 0)
-      ? (draft?.amountPaid ?? 0 - totalToBePaidByPatient)
-      : undefined;
+  const stillToPay = totalToBePaidByPatient - (draft?.amountPaid ?? 0);
+  const changeValue = stillToPay < 0 ? Math.abs(stillToPay) : undefined;
+  const amountOutstanding = stillToPay < 0 ? 0 : stillToPay;
 
   return (
     <>
       <Grid spacing={2}>
         <InputWithLabelRow
-          label={t('label.payment-amount-outstanding')}
+          label={t('label.payment-amount-to-be-paid')}
           Input={
             <BasicTextInput
               disabled={true}
@@ -107,8 +107,19 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           }
         />
         <InputWithLabelRow
+          label={t('label.payment-amount-outstanding')}
+          Input={
+            <BasicTextInput
+              disabled={true}
+              value={amountOutstanding.toFixed(2)}
+            />
+          }
+        />
+        <InputWithLabelRow
           label={t('label.payment-change')}
-          Input={<BasicTextInput disabled={true} value={changeValue} />}
+          Input={
+            <BasicTextInput disabled={true} value={changeValue?.toFixed(2)} />
+          }
         />
       </Grid>
     </>
