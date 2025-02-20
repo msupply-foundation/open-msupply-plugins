@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  BasicTextInput,
+  CurrencyInput,
   Grid,
   InputWithLabelRow,
-  NumericTextInput,
   Select,
   useTranslation,
 } from '@openmsupply-client/common';
 import { PrescriptionPaymentFormPlugin } from './PrescriptionPaymentFormWrapper';
 import { usePluginData } from './api';
 
-// TODO: Translate?
 enum PaymentMethod {
   CASH = 'Cash',
   CARD = 'Card',
@@ -31,16 +29,20 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
   events,
 }) => {
   const t = useTranslation('common');
-  const [draft, setDraft] = React.useState<
-    PrescriptionPaymentData | undefined
-  >();
+  const [draft, setDraft] = useState<PrescriptionPaymentData | undefined>();
+
+  const stillToPay = totalToBePaidByPatient - (draft?.amountPaid ?? 0);
+  const changeValue = stillToPay < 0 ? Math.abs(stillToPay) : 0;
+  const amountOutstanding = stillToPay < 0 ? 0 : stillToPay;
 
   const { data: paymentData } = usePluginData.data(prescriptionData?.id ?? '');
   const data = paymentData?.[0];
   const { mutate } = data?.id ? usePluginData.update() : usePluginData.insert();
 
   const onSave = useCallback(async () => {
-    //TODO: disable save button if payment isn't valid
+    if (amountOutstanding > 0)
+      throw new Error(t('error.plugin-payment-amount-outstanding'));
+
     mutate({
       id: data?.id,
       data: JSON.stringify(draft),
@@ -60,22 +62,46 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
     }
   }, [data]);
 
-  const stillToPay = totalToBePaidByPatient - (draft?.amountPaid ?? 0);
-  const changeValue = stillToPay < 0 ? Math.abs(stillToPay) : undefined;
-  const amountOutstanding = stillToPay < 0 ? 0 : stillToPay;
-
   return (
     <>
-      <Grid spacing={2}>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <InputWithLabelRow
           label={t('label.payment-amount-to-be-paid')}
           Input={
-            <BasicTextInput
-              disabled={true}
-              value={totalToBePaidByPatient.toFixed(2)}
+            <CurrencyInput
+              value={totalToBePaidByPatient}
+              decimalsLimit={2}
+              onChangeNumber={() => {}}
+              style={{ borderRadius: 4, pointerEvents: 'none' }}
             />
           }
         />
+        <InputWithLabelRow
+          label={t('label.payment-amount-outstanding')}
+          Input={
+            <CurrencyInput
+              key={amountOutstanding}
+              value={amountOutstanding}
+              decimalsLimit={2}
+              onChangeNumber={() => {}}
+              style={{ borderRadius: 4, pointerEvents: 'none' }}
+            />
+          }
+          sx={{ pt: 1 }}
+        />
+        <InputWithLabelRow
+          label={t('label.payment-amount-paid')}
+          Input={
+            <CurrencyInput
+              value={draft?.amountPaid ?? 0}
+              onChangeNumber={e => setDraft({ ...draft, amountPaid: e })}
+              style={{ borderRadius: 4 }}
+            />
+          }
+          sx={{ pt: 1 }}
+        />
+      </Grid>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <InputWithLabelRow
           label={t('label.payment-type')}
           Input={
@@ -85,41 +111,38 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
                 value,
                 label: value,
               }))}
-              value={draft?.paymentMethod}
+              value={
+                draft?.paymentMethod
+                  ? t(`paymentMethod.${draft?.paymentMethod}`)
+                  : ''
+              }
               onChange={e =>
                 setDraft({
                   ...draft,
                   paymentMethod: e.target.value as PaymentMethod,
                 })
               }
-            />
-          }
-        />
-        <InputWithLabelRow
-          label={t('label.payment-amount-paid')}
-          Input={
-            <NumericTextInput
-              fullWidth
-              value={draft?.amountPaid}
-              decimalLimit={2}
-              onChange={e => setDraft({ ...draft, amountPaid: e })}
-            />
-          }
-        />
-        <InputWithLabelRow
-          label={t('label.payment-amount-outstanding')}
-          Input={
-            <BasicTextInput
-              disabled={true}
-              value={amountOutstanding.toFixed(2)}
+              sx={{
+                width: 0,
+                flexGrow: 1,
+                marginRight: 2,
+                '& .MuiInputBase-root': { borderRadius: 1 },
+              }}
             />
           }
         />
         <InputWithLabelRow
           label={t('label.payment-change')}
           Input={
-            <BasicTextInput disabled={true} value={changeValue?.toFixed(2)} />
+            <CurrencyInput
+              key={changeValue}
+              value={changeValue}
+              decimalsLimit={2}
+              onChangeNumber={() => {}}
+              style={{ borderRadius: 4, pointerEvents: 'none' }}
+            />
           }
+          sx={{ pt: 1 }}
         />
       </Grid>
     </>
