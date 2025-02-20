@@ -77,25 +77,25 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           }
         />
         <InputWithLabelRow
-          label={t('label.payment-amount-outstanding')}
-          Input={
-            <CurrencyInput
-              key={amountOutstanding}
-              value={amountOutstanding}
-              decimalsLimit={2}
-              onChangeNumber={() => {}}
-              style={{ borderRadius: 4, pointerEvents: 'none' }}
-            />
-          }
-          sx={{ pt: 1 }}
-        />
-        <InputWithLabelRow
           label={t('label.payment-amount-paid')}
           Input={
             <CurrencyInput
               value={draft?.amountPaid ?? 0}
               onChangeNumber={e => setDraft({ ...draft, amountPaid: e })}
               style={{ borderRadius: 4 }}
+            />
+          }
+          sx={{ pt: 1 }}
+        />
+        <InputWithLabelRow
+          label={t('label.payment-change')}
+          Input={
+            <CurrencyInput
+              key={changeValue}
+              value={changeValue}
+              decimalsLimit={2}
+              onChangeNumber={() => {}}
+              style={{ borderRadius: 4, pointerEvents: 'none' }}
             />
           }
           sx={{ pt: 1 }}
@@ -132,11 +132,11 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           }
         />
         <InputWithLabelRow
-          label={t('label.payment-change')}
+          label={t('label.payment-amount-outstanding')}
           Input={
             <CurrencyInput
-              key={changeValue}
-              value={changeValue}
+              key={amountOutstanding}
+              value={amountOutstanding}
               decimalsLimit={2}
               onChangeNumber={() => {}}
               style={{ borderRadius: 4, pointerEvents: 'none' }}
