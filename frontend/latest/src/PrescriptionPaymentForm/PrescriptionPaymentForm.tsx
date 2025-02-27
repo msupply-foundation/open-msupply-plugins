@@ -69,6 +69,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           label={t('label.payment-amount-to-be-paid')}
           Input={
             <CurrencyInput
+              key={`totalToBePaidByPatient${totalToBePaidByPatient}`}
               value={totalToBePaidByPatient}
               decimalsLimit={2}
               onChangeNumber={() => {}}
@@ -80,6 +81,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           label={t('label.payment-amount-paid')}
           Input={
             <CurrencyInput
+              key={`amountPaid`}
               value={draft?.amountPaid ?? 0}
               onChangeNumber={e => setDraft({ ...draft, amountPaid: e })}
               style={{ borderRadius: 4 }}
@@ -91,7 +93,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           label={t('label.payment-change')}
           Input={
             <CurrencyInput
-              key={changeValue}
+              key={`changeValueZ${changeValue}`}
               value={changeValue}
               decimalsLimit={2}
               onChangeNumber={() => {}}
@@ -132,10 +134,11 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           }
         />
         <InputWithLabelRow
+          key={'amountOutstanding-row'}
           label={t('label.payment-amount-outstanding')}
           Input={
             <CurrencyInput
-              key={amountOutstanding}
+              key={`amountOutstanding-${amountOutstanding}`}
               value={amountOutstanding}
               decimalsLimit={2}
               onChangeNumber={() => {}}
