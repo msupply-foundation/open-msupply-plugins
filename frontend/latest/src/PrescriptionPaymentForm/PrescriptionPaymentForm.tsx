@@ -77,7 +77,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
               value={totalToBePaidByPatient}
               decimalsLimit={2}
               onChangeNumber={() => {}}
-              style={{ borderRadius: 4, pointerEvents: 'none' }}
+              disabled
             />
           }
         />
@@ -101,7 +101,8 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
               value={changeValue}
               decimalsLimit={2}
               onChangeNumber={() => {}}
-              style={{ borderRadius: 4, pointerEvents: 'none' }}
+              disabled
+              style={{ borderRadius: 4 }}
             />
           }
           sx={{ pt: 1 }}
@@ -146,7 +147,8 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
               value={amountOutstanding}
               decimalsLimit={2}
               onChangeNumber={() => {}}
-              style={{ borderRadius: 4, pointerEvents: 'none' }}
+              disabled
+              style={{ borderRadius: 4 }}
             />
           }
           sx={{ pt: 1 }}
