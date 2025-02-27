@@ -97,7 +97,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
           label={t('label.payment-change')}
           Input={
             <CurrencyInput
-              key={`changeValueZ${changeValue}`}
+              key={`changeValue${changeValue}`}
               value={changeValue}
               decimalsLimit={2}
               onChangeNumber={() => {}}
