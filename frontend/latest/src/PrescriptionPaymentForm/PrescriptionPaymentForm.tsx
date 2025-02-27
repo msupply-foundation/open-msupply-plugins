@@ -114,7 +114,7 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
               value={
                 draft?.paymentMethod
                   ? t(`paymentMethod.${draft?.paymentMethod}`)
-                  : ''
+                  : PaymentMethod.CASH
               }
               onChange={e =>
                 setDraft({
