@@ -62,6 +62,10 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
     }
   }, [data]);
 
+  // NOTE: Key hack below, this is a workaround for the CurrencyInput component not updating as expected
+  // internally value is mapping to defaultValue, so the component is not updating when the value prop changes
+  // If the input if fixed, or we can switch to something like CurrencyDisplayInput, this can be removed
+
   return (
     <>
       <Grid size={{ xs: 12, sm: 6 }}>
