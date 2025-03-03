@@ -116,12 +116,10 @@ const PrescriptionPaymentFormInner: PrescriptionPaymentFormPlugin = ({
               fullWidth
               options={Object.values(PaymentMethod).map(value => ({
                 value,
-                label: value,
+                label: t(`paymentMethod.${value}`),
               }))}
               value={
-                draft?.paymentMethod
-                  ? t(`paymentMethod.${draft?.paymentMethod}`)
-                  : PaymentMethod.CASH
+                draft?.paymentMethod ? draft.paymentMethod : PaymentMethod.CASH
               }
               onChange={e =>
                 setDraft({
