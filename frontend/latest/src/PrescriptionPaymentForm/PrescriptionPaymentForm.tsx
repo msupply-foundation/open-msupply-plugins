@@ -13,6 +13,7 @@ enum PaymentMethod {
   CASH = 'Cash',
   CARD = 'Card',
   CHEQUE = 'Cheque',
+  MOBILE = 'Mobile',
 }
 
 type PrescriptionPaymentData = {
