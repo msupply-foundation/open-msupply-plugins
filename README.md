@@ -125,7 +125,7 @@ The above would mean, that stocktake done on 31st of previous month, and finalis
 ### Slow requisition opening and item information panel
 
 At the time of writing this description, I've observed some slowness when opening a requisition where aggregated MOS is calculated and displayed in the panel under requisition line edit.
-There is an issue to fix this TODO create issue (also i think we are also getting ItemStats for item in requisition query, it should only come from RequisitionLineNode)
+There is an issue to fix in this issue: https://github.com/msupply-foundation/open-msupply/issues/6989 (also i think we are also getting ItemStats for item in requisition query, it should only come from RequisitionLineNode)
 
 There is also an issue with item information panel not matching mSupply and aggregated AMC, this information panel should be implemented via plugin, but that would need some extra extensions for plugin interface (mainly graphql endpoint for running plugin as API)
 
@@ -139,9 +139,38 @@ We use total quantity for DOS and movements, even though on requisition the fiel
 
 ### Automated tests
 
-TODO write up about test/graphql
+I made automated way to create internal order quickly, as a base for automated tests (and to speed up manual test), you can see it in test/graphql. You can update ids and other params in that test and cargo run to help generate and display internal orders
 
-### TODO
+## Testing
+
+I've used some scripts to help decide which facilities are the best to use for testing. You will need two types of facilities, a district and a clinic, name of one would start with 'district' and the other shouldn't have any names linked to it with supplying_store_id.
+
+You can use this SQL (in record_browser), to see which store has good transaction:
+
+```
+SELECT
+    store.name,
+    CONCAT(YEAR(entry_date), MONTH(entry_date)),
+    count(transact.id)
+FROM
+    transact
+    JOIN store ON store.id = transact.store_id
+WHERE
+    entry_date > '2024-01-01'
+GROUP BY
+    1,
+    2
+```
+
+Check that configurations above are correct (including month consumption look back period)
+
+Add store to omSupply sites, sync, either create a copy of existing data file an open, or stop sync (by changing password on sync site).
+
+Create internal order for the same period on both omSupply and mSuppy and compare. You might get discrepancies if your timezone is not set as Cote d'Ivoire.
+
+For aggregated AMC you would most likely need to enter response requisitions with AMC etc, since latest data doesn't have much of those stats
+
+## TODO
 
 * Outline 'when' amc calculations are updated
 * Double up on AMC calculation (currently requisition creating will call item stats, even though we would use transform requisition calculations), item stats should have "context", and ideally requisition ID if context is requisition (then we just do AMC withing average_monthly_consumption plugin)
