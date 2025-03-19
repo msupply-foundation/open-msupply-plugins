@@ -94,7 +94,11 @@ Stock movement fields are populated in requisition, based on the period
 
 ### Installation
 
-Grab bundle etc..
+Download bundle.json from the root of the repo and run the following (`--url`, `--username` and `--password` should be for for omSupply server, which has to also be central server)
+
+```
+remote_server_cli install-plugin-bundle -p bundle.json --url 'http://localhost:8000' --username admin --password pass
+```
 
 ###  Monthly consumption look back period
 
@@ -142,3 +146,4 @@ TODO write up about test/graphql
 * Outline 'when' amc calculations are updated
 * Double up on AMC calculation (currently requisition creating will call item stats, even though we would use transform requisition calculations), item stats should have "context", and ideally requisition ID if context is requisition (then we just do AMC withing average_monthly_consumption plugin)
 * Can we expose more of the core, for things like item ledger ?
+* Can add sql helpers to core plugin code (maybe even in rust code ?)
