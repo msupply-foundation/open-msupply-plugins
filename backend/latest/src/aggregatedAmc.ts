@@ -13,13 +13,6 @@ export const aggregateAmcCommon = (
   const summedNamesForItemMap = mapValues(itemToNameMap, names => names.length);
   const maxNumberOfSuppliersForItem = maxBy(values(summedNamesForItemMap)) || 0;
 
-  log(
-    JSON.stringify({
-      itemToNameMap,
-      summedNamesForItemMap,
-      maxNumberOfSuppliersForItem,
-    })
-  );
   if (maxNumberOfSuppliersForItem <= 0) {
     return undefined;
   }
@@ -35,8 +28,6 @@ export const aggregateAmcCommon = (
     })
   );
 
-  log(JSON.stringify(consumptionMap));
-
   const result = mapValues(
     consumptionMap,
     (
@@ -47,9 +38,6 @@ export const aggregateAmcCommon = (
       let numberOfNamesForItem =
         summedNamesForItemMap[itemId] || numberOfCountedNames;
 
-      log(
-        JSON.stringify({ numberOfCountedNames, numberOfNamesForItem, itemId })
-      );
       // If no items are visible for any suppliers, don't calculate
       if (!numberOfNamesForItem) {
         return;
@@ -78,7 +66,6 @@ export const aggregateAmcCommon = (
     }
   );
 
-  log(JSON.stringify(result));
   return result;
 };
 
