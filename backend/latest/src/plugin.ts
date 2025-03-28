@@ -1,14 +1,14 @@
 // To upload to server (after adding submodule to openmsupply repo locally)
 // cargo run --bin remote_server_cli -- generate-and-install-plugin-bundle -i '../client/packages/plugins/{plugin name}/backend' -u 'http://localhost:8000' --username 'test' --password 'pass'
 
-import { BackendPlugins } from '@backendPlugins';
-import { RequisitionRow } from '../../../../backendTypes/generated/RequisitionRow';
-import { StorePreferenceRow } from '../../../../backendTypes/generated/StorePreferenceRow';
+import { BackendPlugins } from '@common/types';
+import { RequisitionRow } from '@common/generated/RequisitionRow';
+import { StorePreferenceRow } from '@common/generated/StorePreferenceRow';
 import { normalAmcWithDOSadjustment } from './normalAmcWithDOSadjustment';
 import { aggregatedAmc } from './aggregatedAmc';
 import { calculateDates, itemLinkIdMap, periodDates } from './utils';
 import { itemMovementsInPeriod } from './itemMovementsInPeriod';
-import { endOfDay, startOfDay } from './sqlUtils';
+import { aggregatedAmcInfo } from './aggregatedAmcInfo';
 
 const plugins: BackendPlugins = {
   average_monthly_consumption: ({ store_id, item_ids }) => {
@@ -33,15 +33,10 @@ const plugins: BackendPlugins = {
         assertUnreachable(context);
     }
 
-    let periodEndDate = new Date();
-    let periodStartDate = new Date();
-    if (!!requisition.period_id) {
-      const dates = periodDates(requisition.period_id);
-      if (dates) {
-        periodEndDate = endOfDay(dates.periodEndDate);
-        periodStartDate = startOfDay(dates.periodStartDate);
-      }
-    }
+    const { periodStartDate, periodEndDate } = periodDates(
+      requisition.period_id
+    );
+
     const dates = calculateDates(periodEndDate, requisition.store_id);
     const { itemLinkToItem } = itemLinkIdMap(
       lines.map(({ item_link_id }) => item_link_id)
@@ -140,6 +135,7 @@ const plugins: BackendPlugins = {
       }),
     };
   },
+  graphql_query: params => aggregatedAmcInfo(params),
 };
 
 const calculateSuggestedQuantity = ({

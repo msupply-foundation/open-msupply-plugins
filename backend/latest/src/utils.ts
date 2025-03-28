@@ -1,7 +1,18 @@
 import * as sqlQueries from './sqlQueries';
-import { endOfDay, fromSqlDateTime, localDate, startOfDay } from './sqlUtils';
+import {
+  endOfDay,
+  fromSqlDateTime,
+  localDate,
+  startOfDay,
+} from '@common/utils';
 
-export const periodDates = (periodId: string) => {
+export const periodDates = (periodId?: string | null) => {
+  const defaultResult = {
+    periodEndDate: new Date(),
+    periodStartDate: new Date(),
+  };
+  if (!periodId) return defaultResult;
+
   const period = sqlQueries.datesForPeriod(periodId)[0];
   try {
     const periodEndDate = new Date(String(period?.end_date) || '');
@@ -18,6 +29,8 @@ export const periodDates = (periodId: string) => {
       })
     );
   }
+
+  return defaultResult;
 };
 
 export const itemLinkIdMap = (itemLinkIds: string[]) => {

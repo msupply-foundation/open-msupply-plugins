@@ -1,4 +1,86 @@
+import { mapValues } from 'lodash';
 import * as sqlQueries from './sqlQueries';
+import groupBy from 'lodash/groupBy';
+import values from 'lodash/values';
+import sumBy from 'lodash/sumBy';
+import maxBy from 'lodash/maxBy';
+
+export const aggregateAmcCommon = (
+  suppliedNameForItems: ReturnType<typeof sqlQueries.suppliedNamesForItems>,
+  consumptions: ReturnType<typeof sqlQueries.latestResponseRequisitionLines>
+) => {
+  const itemToNameMap = groupBy(suppliedNameForItems, 'item_id');
+  const summedNamesForItemMap = mapValues(itemToNameMap, names => names.length);
+  const maxNumberOfSuppliersForItem = maxBy(values(summedNamesForItemMap)) || 0;
+
+  log(
+    JSON.stringify({
+      itemToNameMap,
+      summedNamesForItemMap,
+      maxNumberOfSuppliersForItem,
+    })
+  );
+  if (maxNumberOfSuppliersForItem <= 0) {
+    return undefined;
+  }
+
+  if (consumptions.length <= 0) return {};
+
+  const consumptionMap = mapValues(
+    groupBy(consumptions, 'item_id'),
+    itemRows => ({
+      summedAMC: sumBy(itemRows, 'average_monthly_consumption'),
+      summedStock: sumBy(itemRows, 'available_stock_on_hand'),
+      numberOfCountedNames: itemRows.length,
+    })
+  );
+
+  log(JSON.stringify(consumptionMap));
+
+  const result = mapValues(
+    consumptionMap,
+    (
+      { numberOfCountedNames, summedAMC, summedStock: aggregateStock },
+      itemId
+    ) => {
+      // How many names that this store supplies, have this item visible
+      let numberOfNamesForItem =
+        summedNamesForItemMap[itemId] || numberOfCountedNames;
+
+      log(
+        JSON.stringify({ numberOfCountedNames, numberOfNamesForItem, itemId })
+      );
+      // If no items are visible for any suppliers, don't calculate
+      if (!numberOfNamesForItem) {
+        return;
+      }
+
+      // Number of names matches, don't need to apply average to missing AMC for name
+      if (numberOfCountedNames >= numberOfNamesForItem) {
+        return {
+          average_monthly_consumption: summedAMC,
+          aggregateStock,
+        };
+      }
+
+      // Calculate average and apply to names that are missing AMC
+      const averageAMC = summedAMC / numberOfCountedNames;
+
+      return {
+        average_monthly_consumption:
+          numberOfCountedNames >= numberOfNamesForItem
+            ? summedAMC
+            : summedAMC +
+              averageAMC * (numberOfNamesForItem - numberOfCountedNames),
+        aggregateStock,
+        averageAMC,
+      };
+    }
+  );
+
+  log(JSON.stringify(result));
+  return result;
+};
 
 export const aggregatedAmc = ({
   storeId,
@@ -10,88 +92,13 @@ export const aggregatedAmc = ({
   dates: Dates;
   itemIds: string[];
   orderType?: string | null;
-}) => {
-  const numberOfSuppliedNamesForItems = sqlQueries.supplierNamesForItems(
-    storeId,
-    itemIds
+}) =>
+  aggregateAmcCommon(
+    sqlQueries.suppliedNamesForItems(storeId, itemIds),
+    sqlQueries.latestResponseRequisitionLines(
+      storeId,
+      itemIds,
+      dates,
+      orderType
+    )
   );
-
-  const maxNumberOfSuppliersForItem = numberOfSuppliedNamesForItems.reduce(
-    (acc, { number_of_names }) =>
-      acc > number_of_names ? acc : number_of_names,
-    0
-  );
-
-  if (maxNumberOfSuppliersForItem <= 0) {
-    return undefined;
-  }
-
-  const consumptions = sqlQueries.latestResponseRequisitionLines(
-    storeId,
-    itemIds,
-    dates,
-    orderType
-  );
-
-  if (consumptions.length <= 0) return {};
-  const consumptionDefault = {
-    summedStock: 0,
-    summedAMC: 0,
-    numberOfNames: 0,
-    itemId: '',
-  };
-
-  const consumptionMap: { [itemLinkId: string]: typeof consumptionDefault } =
-    {};
-  consumptions.forEach(c => {
-    const current = consumptionMap[c.item_id] || { ...consumptionDefault };
-    current.summedAMC += c.average_monthly_consumption;
-    current.summedStock += c.available_stock_on_hand;
-    current.numberOfNames += 1;
-    current.itemId = c.item_id;
-
-    consumptionMap[c.item_id] = current;
-  });
-
-  const result: {
-    [itemLinkId: string]: {
-      // aggregate monthly consumption, to match return of AMC
-      average_monthly_consumption: number;
-      aggregateStock: number;
-    };
-  } = {};
-
-  // aggregateStock is actually filtered by requisition_lines with AMC > 0, this is how it is in mSupply
-  // technically should be latest line with stock, even if AMC = 0
-  Object.entries(consumptionMap).forEach(
-    ([
-      itemLinkId,
-      { numberOfNames, summedAMC, summedStock: aggregateStock, itemId },
-    ]) => {
-      // How many names that this store supplies, have this item visible
-      let numberOfNamesForItem =
-        numberOfSuppliedNamesForItems.find(({ item_id }) => item_id === itemId)
-          ?.number_of_names || numberOfNames;
-      // If no items are visible for any suppliers, don't calculate
-      if (!numberOfNamesForItem) {
-        return;
-      }
-      // Number of names matches,don't need to apply average to missing AMC for name
-      if (numberOfNames >= numberOfNamesForItem) {
-        result[itemLinkId] = {
-          average_monthly_consumption: summedAMC,
-          aggregateStock,
-        };
-        return;
-      }
-
-      // Calculate average and apply to names that are missing AMC
-      const averageAMC = summedAMC / numberOfNames;
-      const average_monthly_consumption =
-        summedAMC + averageAMC * (numberOfNamesForItem - numberOfNames);
-      result[itemLinkId] = { average_monthly_consumption, aggregateStock };
-    }
-  );
-
-  return result;
-};

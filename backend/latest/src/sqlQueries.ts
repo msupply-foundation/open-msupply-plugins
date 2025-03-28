@@ -1,4 +1,4 @@
-import { sqlDateTime, sqlList, sqlQuery } from './sqlUtils';
+import { sqlDateTime, sqlList, sqlQuery } from '@common/utils';
 
 export const datesForPeriod = (periodId: string) =>
   sqlQuery(
@@ -83,11 +83,11 @@ export const periodStockMovements = (
   `
   );
 
-export const supplierNamesForItems = (storeId: string, itemIds: string[]) =>
+export const suppliedNamesForItems = (storeId: string, itemIds: string[]) =>
   sqlQuery(
-    ['item_id', 'number_of_names'],
+    ['item_id', 'name'],
     `
-        SELECT il.item_id as item_id, count(distinct(nl.name_id)) as number_of_names 
+        SELECT il.item_id as item_id, n.name as name
         FROM name as n
         JOIN name_link as nl on nl.name_id = n.id
         JOIN master_list_name_join as mlnj on mlnj.name_link_id = nl.id
@@ -97,7 +97,6 @@ export const supplierNamesForItems = (storeId: string, itemIds: string[]) =>
         WHERE n.supplying_store_id = '${storeId}'
         AND ml.is_active = true
         AND il.item_id IN ${sqlList(itemIds)}
-        GROUP BY 1
     `
   );
 

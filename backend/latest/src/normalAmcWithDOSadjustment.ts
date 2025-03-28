@@ -1,5 +1,5 @@
 import * as sqlQueries from './sqlQueries';
-import { localDate } from './sqlUtils';
+import { localDate } from '@common/utils';
 import { ledgerInPeriod } from './utils';
 
 export const normalAmcWithDOSadjustment = (params: CommonParams) => {
