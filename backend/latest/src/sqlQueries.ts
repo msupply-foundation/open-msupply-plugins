@@ -4,7 +4,7 @@ export const datesForPeriod = (periodId: string) =>
   sqlQuery(
     ['end_date', 'start_date'],
     `       
-        SELECT end_date, start_date FROM period WHERE id = "${periodId}"
+        SELECT end_date, start_date FROM period WHERE id = '${periodId}'
     `
   );
 
@@ -13,9 +13,9 @@ export const consumption = (storeId: string, itemIds: string[], dates: Dates) =>
     ['item_id', 'consumption'],
     `       
         SELECT item_id, sum(quantity) AS consumption FROM consumption 
-        WHERE store_id = "${storeId}" 
+        WHERE store_id = '${storeId}' 
         AND item_id in ${sqlList(itemIds)} 
-        AND date >= "${sqlDateTime(dates.periodStartDate)}"
+        AND date >= '${sqlDateTime(dates.periodStartDate)}'
         GROUP BY item_id
     `
   );
@@ -25,7 +25,7 @@ export const SOH = (storeId: string, itemIds: string[]) =>
     ['item_id', 'total_stock_on_hand'],
     `
         SELECT item_id, total_stock_on_hand from stock_on_hand
-        WHERE store_id = "${storeId}" AND item_id in ${sqlList(itemIds)}
+        WHERE store_id = '${storeId}' AND item_id in ${sqlList(itemIds)}
     `
   );
 
@@ -39,9 +39,9 @@ export const stockMovement = (
     `  
       SELECT item_id, datetime, quantity
       FROM stock_movement WHERE 
-      store_id = "${storeId}" 
+      store_id = '${storeId}' 
       AND item_id IN ${sqlList(itemIds)}
-      AND datetime >= "${sqlDateTime(dates.periodStartDate)}"
+      AND datetime >= '${sqlDateTime(dates.periodStartDate)}'
     `
   );
 
@@ -75,10 +75,10 @@ export const periodStockMovements = (
             sum(quantity) FILTER(WHERE invoice_type = 'INVENTORY_ADDITION') as adjustment_addition,
             sum(quantity) FILTER(WHERE invoice_type = 'INVENTORY_REDUCTION') as adjustment_reduction
         FROM stock_movement WHERE 
-        store_id = "${storeId}" 
+        store_id = '${storeId}' 
         AND item_id in ${sqlList(itemIds)}
-        AND datetime >= "${sqlDateTime(dates.periodStartDate)}"
-        AND datetime <= "${sqlDateTime(dates.periodEndDate)}"
+        AND datetime >= '${sqlDateTime(dates.periodStartDate)}'
+        AND datetime <= '${sqlDateTime(dates.periodEndDate)}'
         GROUP BY item_id
   `
   );
