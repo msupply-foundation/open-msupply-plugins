@@ -1,16 +1,13 @@
 import { Plugins } from '@openmsupply-client/common';
-import PrescriptionPaymentForm from './PrescriptionPaymentForm/PrescriptionPaymentFormWrapper';
-import { ItemInformationView } from './AggregateAmcInfo/AggregateAmcInfo';
-import * as stockDonor from './ForecastQuantity/ForecastQuantityColumn';
+import * as forecastQuantity from './ForecastQuantity/ForecastQuantityColumn';
 
-const CIVPlugins: Plugins = {
-  prescriptionPaymentForm: [PrescriptionPaymentForm],
+const ForecastingPlugins: Plugins = {
   requestRequisitionLine: {
-    tableStateLoader: [stockDonor.StateLoader],
-    tableColumn: [stockDonor.ForecastQuantityColumn],
+    tableStateLoader: [forecastQuantity.StateLoader],
+    tableColumn: [forecastQuantity.ForecastQuantityColumn],
     editViewField: [],
-    editViewInfo: [ItemInformationView],
+    editViewInfo: [],
   },
 };
 
-export default CIVPlugins;
+export default ForecastingPlugins;
