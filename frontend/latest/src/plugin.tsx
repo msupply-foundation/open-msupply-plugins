@@ -1,26 +1,16 @@
 import { Plugins } from '@openmsupply-client/common';
-import ShippingStatus from './ShippingStatus/ShippingStatus';
-import Replenishment from './Dashboard/Replenishment';
-import SyncStatus from './Dashboard/SyncStatus';
-import StockDonorEdit from './StockDonor/StockDonorEdit';
-import * as stockDonor from './StockDonor/StockDonorColumn';
-import * as aggregateAmc from './AggregateAmc/AggregateAmcColumn';
-import { Info } from './AggregateAmc/AggregateAmcInfo';
+import PrescriptionPaymentForm from './PrescriptionPaymentForm/PrescriptionPaymentFormWrapper';
+import { ItemInformationView } from './AggregateAmcInfo/AggregateAmcInfo';
+import * as stockDonor from './ForecastQuantity/ForecastQuantityColumn';
 
-const ReplenishmentAndSyncStatus: Plugins = {
-  inboundShipmentAppBar: [ShippingStatus],
-  dashboard: [Replenishment, SyncStatus],
-  stockLine: {
-    tableStateLoader: [stockDonor.StateLoader],
-    tableColumn: [stockDonor.StockDonorColumn],
-    editViewField: [StockDonorEdit],
-  },
+const CIVPlugins: Plugins = {
+  prescriptionPaymentForm: [PrescriptionPaymentForm],
   requestRequisitionLine: {
-    tableStateLoader: [aggregateAmc.StateLoader],
-    tableColumn: [aggregateAmc.AggregateAmcColumn],
-    editViewField: [aggregateAmc.AggregateAmcEditView],
-    editViewInfo: [Info],
+    tableStateLoader: [stockDonor.StateLoader],
+    tableColumn: [stockDonor.ForecastQuantityColumn],
+    editViewField: [],
+    editViewInfo: [ItemInformationView],
   },
 };
 
-export default ReplenishmentAndSyncStatus;
+export default CIVPlugins;
