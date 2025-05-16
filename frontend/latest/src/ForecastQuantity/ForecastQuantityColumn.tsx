@@ -28,11 +28,6 @@ type ForecastQuantityColumn = NonNullable<
 export const StateLoader: ArrayElement<
   ForecastQuantityColumn['tableStateLoader']
 > = props => {
-  console.log('StateLoader', props);
-  console.log(
-    'IDs',
-    props.requestLines.map(({ id }) => id)
-  );
   const { set } = useColumnStore();
   const { data } = usePluginData.data(props.requestLines.map(({ id }) => id));
 
@@ -42,24 +37,16 @@ export const StateLoader: ArrayElement<
     }
   }, [data]);
 
-  console.log('data', data);
-
   return <></>;
 };
 
 const ForecastColumn = ({ rowData }: CellProps<RequestLineFragment>) => {
   const { getById } = useColumnStore();
 
-  console.log('ForecastColumn', rowData);
-
-  let value = '';
-
-  try {
-    const parsed = JSON.parse(getById(rowData)?.data || '{}');
-    value = parsed?.forecastTotal
-      ? String(Math.ceil(parsed?.forecastTotal))
-      : '';
-  } catch {}
+  const parsed = JSON.parse(getById(rowData)?.data || '{}');
+  const value = parsed?.forecastTotal
+    ? String(Math.ceil(parsed?.forecastTotal))
+    : '';
 
   return <BasicCellLayout>{value}</BasicCellLayout>;
 };
