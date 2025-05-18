@@ -10,7 +10,7 @@ import {
   QueryClientProviderProxy,
 } from '@openmsupply-client/common';
 import { RequestLineFragment } from '@openmsupply-client/system';
-import { usePluginData } from './api';
+import { usePluginData } from '../../../../../api';
 
 const useColumnStore = create<PluginDataStore<RequestLineFragment, string>>(
   (set, get) => ({
@@ -29,7 +29,16 @@ export const StateLoader: ArrayElement<
   ForecastQuantityColumn['tableStateLoader']
 > = props => {
   const { set } = useColumnStore();
-  const { data } = usePluginData.data(props.requestLines.map(({ id }) => id));
+
+  const {
+    query: { data },
+  } = usePluginData({
+    pluginCode: 'forecasting_plugins',
+    filter: {
+      dataIdentifier: { equalTo: 'FORECAST_QUANTITY_INFO' },
+      relatedRecordId: { equalAny: props.requestLines.map(({ id }) => id) },
+    },
+  });
 
   useEffect(() => {
     if (!!data) {
