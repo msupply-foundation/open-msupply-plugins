@@ -124,6 +124,7 @@ const calculateForecastQuantities = (
 
     const bufferStockMultiplier = buffer_stock / supplyPeriod + 1;
 
+    // TO_DO: Need to convert units to doses if applicable
     const forecastQuantity =
       (annualTargetStock / 12) * supplyPeriod * bufferStockMultiplier;
 

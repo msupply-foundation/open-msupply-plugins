@@ -69,7 +69,7 @@ const Column = (props: CellProps<RequestLineFragment>) => (
 export const ForecastQuantityColumn: ColumnDefinition<RequestLineFragment> = {
   Cell: Column,
   key: 'forecast-quantity',
-  label: 'Forecast',
+  label: 'plugin.forecasting.forecast-amount',
   maxWidth: 150,
   sortable: false,
   order: 111,
