@@ -4,6 +4,16 @@ const generateBaseConfig = require('../../../backend-plugin-webpack.config.js');
 const path = require('path');
 
 const distDir = path.resolve(__dirname, 'dist');
-const extendConfig = {};
+const extendConfig = {
+  module: {
+    rules: [
+      {
+        test: /\.graphql$/i,
+        // raw-loader
+        type: 'asset/source',
+      },
+    ],
+  },
+};
 
 module.exports = merge(generateBaseConfig({ distDir }), extendConfig);

@@ -5,8 +5,7 @@
         "target": "backend",
         "//": "Fields here must match PluginTypes in backend_plugin_row repository",
         "types": [
-            "average_monthly_consumption",
-            "transform_request_requisition_lines",
+            "processor",
             "graphql_query"
         ],
         "variant_type": "BOA_JS"
@@ -14,15 +13,19 @@
     "version": "1.0.0",
     "main": "plugin.js",
     "scripts": {
-        "build-plugin": "webpack"
+        "build-plugin": "webpack",
+        "generate-graphql-types": "graphql-codegen"
     },
     "license": "MIT",
     "devDependencies": {
+        "@graphql-codegen/cli": "^5.0.5",
+        "@graphql-codegen/import-types-preset": "^3.0.0",
         "@types/lodash": "^4.17.15",
         "ts-loader": "^9.4.4",
         "typescript": "^5.0.2",
         "webpack": "^5.76.2",
-        "webpack-cli": "^5.0.1"
+        "webpack-cli": "^5.0.1",
+        "raw-loader": "^4.0.2"
     },
     "dependencies": {
         "lodash": "^4.17.21",

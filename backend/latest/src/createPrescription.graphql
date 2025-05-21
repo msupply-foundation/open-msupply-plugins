@@ -1,0 +1,41 @@
+mutation createPrescription(
+  $storeId: String!
+  $prescriptionId: String!
+  $patientId: String!
+  $stockLineId: String!
+  $prescriptionLineId: String!
+) {
+  batchPrescription(
+    input: {
+      insertPrescriptions: { id: $prescriptionId, patientId: $patientId }
+      insertPrescriptionLines: {
+        invoiceId: $prescriptionId
+        numberOfPacks: 1
+        stockLineId: $stockLineId
+        id: $prescriptionLineId
+      }
+    }
+    storeId: $storeId
+  ) {
+    insertPrescriptions {
+      id
+      response {
+        __typename
+        ... on InvoiceNode {
+          id
+        }
+      }
+    }
+    insertPrescriptionLines {
+      response {
+        __typename
+        ... on InsertPrescriptionLineError {
+          __typename
+        }
+        ... on InvoiceLineNode {
+          id
+        }
+      }
+    }
+  }
+}

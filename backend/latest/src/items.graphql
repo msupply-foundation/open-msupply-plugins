@@ -1,0 +1,15 @@
+query items($storeId: String!, $itemId: String!) {
+  items(storeId: $storeId, filter: { id: { equalTo: $itemId } }) {
+    ... on ItemConnector {
+      nodes {
+        availableBatches(storeId: $storeId) {
+          nodes {
+            availableNumberOfPacks
+            batch
+            id
+          }
+        }
+      }
+    }
+  }
+}
