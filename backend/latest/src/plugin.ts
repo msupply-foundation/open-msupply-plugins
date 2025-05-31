@@ -4,6 +4,7 @@
 import { BackendPlugins } from '@common/types';
 import { ProcessorInput } from '@common/generated/ProcessorInput';
 import { ChangelogFilter } from '@common/generated/ChangelogFilter';
+import { toNaiveDateTime } from '@common/utils';
 import {
   ItemsQueryVariables,
   ItemsQuery,
@@ -13,8 +14,10 @@ import {
 import itemsQueryText from './items.graphql';
 import createPrescriptionText from './createPrescription.graphql';
 import { uuidv7 } from 'uuidv7';
+import { SyncMessageRow } from '@common/generated/SyncMessageRow';
 
 const MESSAGE_TYPE = 'createPrescription';
+const ERROR_MESSAGE_TYPE = 'createPrescriptionError';
 
 type CreatePrescriptionBody = {
   itemId: string;
@@ -38,13 +41,13 @@ const process = ({
   record_id,
 }: Extract<ProcessorInput, { t: 'Process' }>['v']) => {
   const messageResult = use_repository({
-    t: 'GetMessageById',
+    t: 'GetSyncMessageById',
     v: record_id,
   });
 
   log({ t: 'Message', messageResult });
 
-  if (messageResult.t !== 'GetMessageById') {
+  if (messageResult.t !== 'GetSyncMessageById') {
     throw new Error('Failed to get message');
   }
 
@@ -53,6 +56,11 @@ const process = ({
   if (message?.type !== MESSAGE_TYPE || message?.status !== 'New') {
     log({ t: 'Skipping message', message });
     return 'Skipping message';
+  }
+
+  if (!message.to_store_id) {
+    log({ t: 'No store ID found in message', message });
+    return 'No store ID found in message';
   }
 
   // In real case should check that store is is active on site
@@ -72,7 +80,11 @@ const process = ({
   if (!batch) {
     log({ t: 'No batch with available quantity found' });
 
-    use_repository({ t: 'UpsertMessage', v: { ...message, status: 'Error' } });
+    errorMessage(
+      message,
+      'No stock with available quantity found',
+      message.to_store_id
+    );
 
     return 'No batch with available quantity found';
   }
@@ -99,7 +111,7 @@ const process = ({
   ) {
     log({ t: 'Prescription created', createPrescriptionResult });
     use_repository({
-      t: 'UpsertMessage',
+      t: 'UpsertSyncMessage',
       v: { ...message, status: 'Processed' },
     });
     return 'success';
@@ -107,9 +119,32 @@ const process = ({
 
   log({ t: 'Failed to create prescription', createPrescriptionResult });
 
-  use_repository({ t: 'UpsertMessage', v: { ...message, status: 'Error' } });
+  errorMessage(message, 'Failed to create prescription', message.to_store_id);
 
   return 'Failed to create prescription';
+};
+
+const errorMessage = (
+  currentMessage: SyncMessageRow,
+  error: string,
+  from_store_id: string
+) => {
+  use_repository({
+    t: 'UpsertSyncMessage',
+    v: { ...currentMessage, status: 'Processed' },
+  });
+  use_repository({
+    t: 'UpsertSyncMessage',
+    v: {
+      id: uuidv7(),
+      type: ERROR_MESSAGE_TYPE,
+      status: 'New',
+      body: JSON.stringify({ error }),
+      created_datetime: toNaiveDateTime(new Date()),
+      from_store_id,
+      error_message: 'Failed to create prescription',
+    },
+  });
 };
 
 type Graphql = {
@@ -122,7 +157,7 @@ const plugins: BackendPlugins = {
     switch (input.t) {
       case 'Filter': {
         const filter: ChangelogFilter = {
-          table_name: { equal_to: 'Message' },
+          table_name: { equal_to: 'SyncMessage' },
           // Only process messages that have just arrived via sync to avoid
           // infinite processing since message will be updated
           is_sync_update: { equal_to: true },
