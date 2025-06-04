@@ -142,6 +142,7 @@ const errorMessage = (
       body: JSON.stringify({ error }),
       created_datetime: toNaiveDateTime(new Date()),
       from_store_id,
+      to_store_id: null,
       error_message: 'Failed to create prescription',
     },
   });
