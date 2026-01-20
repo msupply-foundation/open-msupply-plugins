@@ -9,7 +9,11 @@ import { Info } from './AggregateAmc/AggregateAmcInfo';
 
 const ReplenishmentAndSyncStatus: Plugins = {
   inboundShipmentAppBar: [ShippingStatus],
-  dashboard: [Replenishment, SyncStatus],
+  dashboard: {
+    widget: [SyncStatus],
+    panel: [],
+    statistic: [],
+  },
   stockLine: {
     tableStateLoader: [stockDonor.StateLoader],
     tableColumn: [stockDonor.StockDonorColumn],
