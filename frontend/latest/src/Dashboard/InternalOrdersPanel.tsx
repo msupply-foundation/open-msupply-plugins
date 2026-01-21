@@ -18,6 +18,7 @@ export const InternalOrdersPanel = ({
 }: InternalOrderPanelsProps) => {
   const t = useTranslation('dashboard');
   const formatNumber = useFormatNumber();
+  const panelContext = 'internal-orders';
 
   const {
     data: requisitionCount,
@@ -33,8 +34,7 @@ export const InternalOrdersPanel = ({
         isError={isRequisitionCountError}
         isLoading={isRequisitionCountLoading}
         title={t('label.new-internal-order', { ns: 'app' })}
-        widgetContext={widgetContext}
-        panelContext={'internal-orders'}
+        panelContext={`${widgetContext}-${panelContext}`}
         stats={[
           {
             label: t('label.new'),
@@ -43,6 +43,7 @@ export const InternalOrdersPanel = ({
               .addPart(AppRoute.InternalOrder)
               .addQuery({ status: RequisitionNodeStatus.Draft })
               .build(),
+            statContext: `${widgetContext}-${panelContext}-new`,
             alertFlag:
               !!requisitionCount?.request?.draft &&
               requisitionCount?.request?.draft > 0,
@@ -52,19 +53,3 @@ export const InternalOrdersPanel = ({
     </>
   );
 };
-
-// const StockPanel = ({ widgetContext }: InternalOrderPanelsProps) => {
-//   // will render only in widgets with context 'replenishment'
-//   if (widgetContext !== 'replenishment') return null;
-
-//   return (
-//     <ThemeProviderProxy>
-//       <QueryClientProviderProxy>
-//         {/* Can also add multiple panels here if needed */}
-//         <InternalOrderPanels widgetContext={widgetContext} />
-//       </QueryClientProviderProxy>
-//     </ThemeProviderProxy>
-//   );
-// };
-
-// export default StockPanel;

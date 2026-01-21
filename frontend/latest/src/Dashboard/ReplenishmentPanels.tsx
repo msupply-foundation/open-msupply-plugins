@@ -19,22 +19,25 @@ const ShipmentsPanel = ({ widgetContext }: ReplenishmentPanelsProps) => {
   const formatNumber = useFormatNumber();
   const { data, isLoading, isError, error } = useDashboard.statistics.inbound();
 
+  const panelContext = 'ordering';
+
   return (
     <StatsPanel
       error={error as ApiException}
       isError={isError}
       isLoading={isLoading}
       title={t('label.shipments', { ns: 'app' })}
-      widgetContext={widgetContext}
-      panelContext={'ordering'}
+      panelContext={`${widgetContext}-${panelContext}`}
       stats={[
         {
           label: t('label.this-week'),
           value: formatNumber.round(data?.thisWeek),
+          statContext: `${widgetContext}-${panelContext}-this-week`,
         },
         {
           label: t('label.inbound-not-delivered'),
           value: formatNumber.round(data?.notDelivered),
+          statContext: `${widgetContext}-${panelContext}-not-delivered`,
         },
       ]}
     />
