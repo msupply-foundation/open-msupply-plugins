@@ -31,12 +31,8 @@ const StatisticsPanel = ({ panelContext }: { panelContext: string }) => {
   ) : null;
 };
 
-interface OrderingStatsProps {
-  panelContext: string;
-}
-
-export const OrderingStats = ({ panelContext }: OrderingStatsProps) => {
-  // determine both the widget and panel context to render the stat in the correct place
+export const Component = ({ panelContext }: { panelContext: string }) => {
+  // Only render in the replenishment widget + inbound shipments panel
   // can be a plugin or core dashboard widget/panel
   if (panelContext !== 'replenishment-inbound-shipments') {
     return null;
@@ -51,4 +47,9 @@ export const OrderingStats = ({ panelContext }: OrderingStatsProps) => {
   );
 };
 
-export default OrderingStats;
+// Optional: Static property defines the core statistics to hide when this plugin is active
+// Will only hide stats in the defined widget and panel context
+export const hiddenStats = [
+  'replenishment-inbound-shipments-today',
+  'replenishment-inbound-shipments-this-week',
+];
