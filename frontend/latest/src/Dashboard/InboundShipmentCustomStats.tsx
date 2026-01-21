@@ -48,7 +48,6 @@ export const Component = ({ panelContext }: { panelContext: string }) => {
 };
 
 // Optional: Static property defines the core statistics to hide when this plugin is active
-// Will only hide stats in the defined widget and panel context
 export const hiddenStats = [
   'replenishment-inbound-shipments-today',
   'replenishment-inbound-shipments-this-week',
