@@ -1,7 +1,7 @@
 import { Plugins } from '@openmsupply-client/common';
 import ShippingStatus from './ShippingStatus/ShippingStatus';
 import SyncStatus from './Dashboard/SyncStatus';
-import ReplenishmentPanels from './Dashboard/ReplenishmentPanels';
+import * as ReplenishmentPanels from './Dashboard/ReplenishmentPanels';
 import * as OrderingStats from './Dashboard/InboundShipmentCustomStats';
 import StockDonorEdit from './StockDonor/StockDonorEdit';
 import * as stockDonor from './StockDonor/StockDonorColumn';
@@ -12,7 +12,7 @@ const ReplenishmentAndSyncStatus: Plugins = {
   inboundShipmentAppBar: [ShippingStatus],
   dashboard: {
     widget: [SyncStatus],
-    panel: [ReplenishmentPanels],
+    panel: [ReplenishmentPanels, { Component: () => null, hiddenPanels: [] }],
     statistic: [OrderingStats, { Component: () => null, hiddenStats: [] }],
   },
   stockLine: {
