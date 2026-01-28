@@ -3,15 +3,21 @@ import {
   QueryClientProviderProxy,
   ThemeProviderProxy,
 } from '@openmsupply-client/common';
-import { PropsWithChildrenOnly } from '@common/types';
 import SyncStatusWidget from './SyncStatusWidget';
 
-const SyncStatus: React.FC<PropsWithChildrenOnly> = () => (
-  <ThemeProviderProxy>
-    <QueryClientProviderProxy>
-      <SyncStatusWidget />
-    </QueryClientProviderProxy>
-  </ThemeProviderProxy>
-);
+export interface SyncWidgetProps {
+  widgetContext: string;
+}
 
-export default SyncStatus;
+export const Component = () => {
+  return (
+    <ThemeProviderProxy>
+      <QueryClientProviderProxy>
+        <SyncStatusWidget />
+      </QueryClientProviderProxy>
+    </ThemeProviderProxy>
+  );
+};
+
+// Optional: Static property defines the core widgets to hide when this plugin is active
+export const hiddenWidgets = ['stock'];

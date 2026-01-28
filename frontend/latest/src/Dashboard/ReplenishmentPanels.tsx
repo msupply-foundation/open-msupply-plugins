@@ -44,7 +44,7 @@ const ShipmentsPanel = ({ widgetContext }: ReplenishmentPanelsProps) => {
   );
 };
 
-const ReplenishmentPanels = ({ widgetContext }: ReplenishmentPanelsProps) => {
+export const Component = ({ widgetContext }: ReplenishmentPanelsProps) => {
   // defines the widget the component will render into
   // will render only in widgets with context 'replenishment'
   if (widgetContext !== 'replenishment') return null;
@@ -59,4 +59,5 @@ const ReplenishmentPanels = ({ widgetContext }: ReplenishmentPanelsProps) => {
   );
 };
 
-export default ReplenishmentPanels;
+// Optional: Static property defines the core panels to hide when this plugin is active
+export const hiddenPanels = ['replenishment-internal-orders'];
