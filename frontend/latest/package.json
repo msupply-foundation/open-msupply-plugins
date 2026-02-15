@@ -13,7 +13,7 @@
       "requestRequisitionColumn"
     ]
   },
-  "version": "1.0.0",
+  "version": "2.16.0.0",
   "main": "plugin.js",
   "scripts": {
     "build-plugin": "NODE_ENV=production webpack"
