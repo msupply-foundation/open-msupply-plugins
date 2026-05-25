@@ -13,16 +13,10 @@
       "requestRequisitionColumn"
     ]
   },
-  "version": "1.0.0",
+  "version": "2.20.0",
   "main": "plugin.js",
   "scripts": {
-    "build-plugin": "NODE_ENV=production webpack"
+    "build-plugin": "NODE_ENV=production npx webpack"
   },
-  "license": "MIT",
-  "devDependencies": {
-    "webpack": "^5.76.2",
-    "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^4.12.0",
-    "ts-loader": "^9.4.4"
-  }
+  "license": "MIT"
 }

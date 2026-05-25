@@ -20,12 +20,12 @@ export type InboundShipmentAppBar = NonNullable<
 >;
 
 const ShowTracking: InboundShipmentAppBar = ({ shipment }) => {
-  const t = useTranslation('plugin');
+  const t = useTranslation();
   const { Modal, showDialog, hideDialog, open } = useDialog();
   const [loading, setLoading] = React.useState(false);
   const { i18n } = useIntl();
 
-  i18n.addResourceBundle('en', 'plugin', {
+  i18n.addResourceBundle('en', 'common', {
     'heading.show-shipping-status': 'Show Shipping Status',
   });
 
