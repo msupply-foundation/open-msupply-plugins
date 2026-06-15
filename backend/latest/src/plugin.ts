@@ -97,6 +97,7 @@ const plugins: BackendPlugins = {
         related_record_id: line.id,
         // need to share this
         data_identifier: dataIdentifier,
+        datetime: null,
         data: String(
           sql_result
             .filter(({ item_id }) => item_id === line.item_link_id)
@@ -144,7 +145,39 @@ const plugins: BackendPlugins = {
         assertUnreachable(input);
     }
   },
+  // Schedule plugins are polled by the server (see schedule_plugin.rs). Each run we
+  // call out to a local API using the new backend `fetch` and log the result, then
+  // ask to be re-run again shortly via `next_poll_seconds`.
+  schedule: () => {
+    log({ message: 'Example Plugins - schedule run, calling local API via fetch' });
+
+    const response = fetch({
+      url: `${LOCAL_API_URL}/ping`,
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        from: 'open-mSupply example schedule plugin',
+        at: new Date().toJSON(),
+      }),
+    });
+
+    log({
+      message: 'Example Plugins - local API responded',
+      ok: response.ok,
+      status: response.status,
+      // Body comes back as text, parse json responses in the plugin
+      body: JSON.parse(response.body),
+    });
+
+    return { next_poll_seconds: SCHEDULE_NEXT_POLL_SECONDS };
+  },
 };
+
+// Local demo API started alongside the server, see issue #11949 verification notes.
+const LOCAL_API_URL = 'http://localhost:9988';
+// Re-run on each poll. Note the server polls schedule plugins at most every 60s,
+// so this is a lower bound, not an exact interval.
+const SCHEDULE_NEXT_POLL_SECONDS: number = 15;
 
 const getAggregatedAmc = (storeId: string, itemIds: string[]) => {
   return sqlQuery(
