@@ -121,6 +121,23 @@ const plugins: BackendPlugins = {
             name: row.name,
           })),
         };
+      // Demonstrates the backend `enqueue_email` global (open-msupply #12182).
+      // Triggered on demand via the plugin graphql endpoint so it's easy to test.
+      // The email is added to the queue; the central server's scheduled task is
+      // what actually sends it. Both bodies are sent as multipart/alternative,
+      // so we provide html_body and a plain text_body fallback.
+      case 'sendEmail': {
+        const { id } = enqueue_email({
+          to_address: input.toAddress,
+          subject: 'open-mSupply example plugin',
+          html_body: '<p>Hello from the <b>example backend plugin</b>.</p>',
+          text_body: 'Hello from the example backend plugin.',
+        });
+
+        log({ message: 'Example Plugins - email queued', emailId: id });
+
+        return { type: 'sendEmail', emailId: id };
+      }
       default:
         assertUnreachable(input);
     }
