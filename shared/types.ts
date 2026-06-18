@@ -4,11 +4,13 @@ export type Graphql = {
         type: 'aggregateAmc';
         itemIds: string[];
       }
-    | { type: 'echo'; echo: string };
+    | { type: 'echo'; echo: string }
+    | { type: 'sendEmail'; toAddress: string };
   output:
     | {
         type: 'aggregateAmc';
         stats: { itemId: string; name: string; amc: number }[];
       }
-    | { type: 'echo'; echo: string };
+    | { type: 'echo'; echo: string }
+    | { type: 'sendEmail'; emailId: string };
 };
