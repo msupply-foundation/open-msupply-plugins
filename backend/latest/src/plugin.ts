@@ -2,7 +2,7 @@
 // cargo run --bin remote_server_cli -- generate-and-install-plugin-bundle -i '../client/packages/plugins/{plugin name}/backend' -u 'http://localhost:8000' --username 'test' --password 'pass'
 
 import { BackendPlugins } from '@common/types';
-import { ChangelogFilter } from '@common/generated/ChangelogFilter';
+import { CompatibilityChangelogFilter } from '@common/generated/CompatibilityChangelogFilter';
 import { sqlDateTime, sqlList, sqlQuery } from '@common/utils';
 import { Graphql } from '../../../shared/types';
 // Tree shaking working
@@ -127,7 +127,7 @@ const plugins: BackendPlugins = {
   processor: input => {
     switch (input.t) {
       case 'Filter': {
-        const filter: ChangelogFilter = {
+        const filter: CompatibilityChangelogFilter = {
           table_name: { equal_to: 'Invoice' },
         };
 
